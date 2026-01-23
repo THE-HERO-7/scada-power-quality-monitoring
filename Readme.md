@@ -54,28 +54,6 @@ SCADA Dashboard (Streamlit HMI)
 
 ---
 
-## Repository Structure
-
-```
-prototype_code/
-  ├── arduino_adc_stream.ino      # Embedded firmware (ADC + telemetry)
-  ├── scada_backend.py            # Python backend (logger + parser)
-  └── scada_frontend.py           # Streamlit SCADA dashboard (HMI)
-
-prototype_circut/
-  └── prototype_photo.jpg         # Hardware prototype image
-```
-
----
-
-## Hardware Prototype
-
-Current breadboard implementation of the ADC front-end and biasing circuit:
-
-![Hardware Prototype](prototype_circut/prototype_photo.jpg)
-
----
-
 ## Current Status
 
 | Module                             | Status         |
