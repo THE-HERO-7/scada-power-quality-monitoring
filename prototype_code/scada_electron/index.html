@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<body style="background:#111;color:white;font-family:Arial">
+
+<h2>⚡ Signal Monitoring System</h2>
+
+<div style="display:flex">
+
+  <div style="width:65%">
+    <canvas id="wave" width="600" height="200"></canvas>
+    <canvas id="fft" width="600" height="200"></canvas>
+  </div>
+
+  <div class="stats-panel">
+    <div>RMS: <span id="rms">--</span></div>
+    <div>Peak: <span id="peak">--</span></div>
+    <div>Freq: <span id="freq">--</span></div>
+    <div>Crest: <span id="crest">--</span></div>
+    <hr>
+    <div>THD Initial: <span id="thd_i">--</span></div>
+    <div>THD Current: <span id="thd_c">--</span></div>
+    <hr>
+    <!-- ADD THESE TWO LINES -->
+    <div style="font-size: 1.2em; font-weight: bold;">Status: <span id="status">WAITING</span></div>
+    <div>ML Score: <span id="score">--</span></div>
+  </div>
+
+
+</div>
+
+<script src="renderer.js"></script>
+
+</body>
+</html>

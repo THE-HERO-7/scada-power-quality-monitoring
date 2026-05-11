@@ -1,0 +1,12 @@
+{
+  "name": "scada",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "dependencies": {
+    "electron": "^28.0.0",
+    "serialport": "^11.0.0",
+    "@serialport/parser-readline": "^11.0.0"
+  }
+}
