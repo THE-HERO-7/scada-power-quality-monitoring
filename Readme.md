@@ -1,143 +1,130 @@
-# Real-Time Embedded Signal Monitoring & SCADA System
+# Real-Time Embedded Power Quality Monitor & SCADA System
 
-A complete embedded data acquisition and SCADA-style monitoring system built using Arduino and Python for real-time waveform visualization, logging, and analysis of analog electrical signals.
-
-This project mimics an industrial architecture with a **Remote Terminal Unit (RTU)** for signal acquisition and a **supervisory layer (SCADA/HMI)** for monitoring and control.
+> An industrial-grade data acquisition and supervisory monitoring system for real-time waveform visualization, power quality analysis, and ML-based anomaly detection — built with an Arduino Nano 33 BLE and a Python/Electron stack.
 
 ---
 
-## Features (Current)
+## What This Project Does
 
-### Embedded / Hardware
+Electrical signals are rarely as clean as we'd like them to be. Harmonics creep in, distortion builds up, and abnormal events go unnoticed until something fails.
 
-* 12-bit ADC sampling using Arduino Nano 33 BLE Sense Rev2
-* Custom analog front-end for AC signals
-
-  * Mid-supply biasing (≈1.65V)
-  * Voltage scaling using resistor divider
-  * RC low-pass filtering (anti-aliasing + noise suppression)
-  * ADC input protection resistor
-* CSV frame-based serial telemetry (RTU behavior)
-
-### Software / System
-
-* Python backend for:
-
-  * Serial data parsing
-  * Frame validation
-  * Timestamped CSV logging
-  * Real-time processing pipeline
-* Streamlit-based SCADA dashboard (HMI):
-
-  * Live waveform visualization
-  * RMS computation
-  * System status indicators (IDLE / RUNNING / ERROR)
-  * Start / Stop monitoring controls
+This system was built to change that. It monitors electrical signals in real time, computes key power quality metrics (RMS, THD, Crest Factor), runs an unsupervised ML pipeline to catch anomalies before they become problems, and visualizes everything on a live SCADA dashboard — all the way from a microcontroller's ADC pin to an Electron desktop app.
 
 ---
 
-## Architecture
+## Features
+
+### Hardware & Embedded
+- **High-resolution acquisition** — 12-bit ADC sampling at 5 kHz on the Arduino Nano 33 BLE Sense Rev2
+- **Precision analog front-end**
+  - Mid-supply biasing (~1.65V) to center AC signals within ADC range
+  - Voltage divider for safe input scaling
+  - RC low-pass anti-aliasing filter for signal integrity
+  - Transformer-isolated AC sensing for safe mains monitoring
+
+### Signal Processing & ML (Python Backend)
+- **FFT analysis** — frequency domain decomposition of the sampled waveform
+- **THD computation** — Total Harmonic Distortion calculated from harmonic content
+- **Standard metrics** — RMS, Peak-to-Peak, Frequency, and Crest Factor
+- **Anomaly detection** — Isolation Forest model trained on historical baseline data; outputs a confidence score for system stability
+- Powered by NumPy, SciPy, and Scikit-Learn
+
+### SCADA / HMI (Supervisory Layer)
+- **Electron desktop dashboard** featuring:
+  - Live waveform oscilloscope (Canvas-based)
+  - Live FFT spectrum visualization
+  - Power quality metrics panel
+  - Visual alarm indicators — 🟢 NORMAL / 🔴 ANOMALY
+- **Streamlit web dashboard** for remote monitoring and CSV data logging
+
+---
+
+## System Circuit
+
+<p align="center">
+  <img src="prototype_circuit/circuit.jpg" alt="Circuit" width="700"/>
+</p>
+
+
+## System Architecture
 
 ```
-Signal Source
-     ↓
-Analog Signal Conditioning (bias + scaling + filter)
-     ↓
-Arduino ADC (RTU)
-     ↓
-Serial Telemetry (UART)
-     ↓
-Python Backend (processing + logging)
-     ↓
-SCADA Dashboard (Streamlit HMI)
+[ Signal Source ]
+       ↓
+[ Analog Front-End ]         →  Bias + Scale + Filter
+       ↓
+[ Arduino Nano 33 BLE ]      →  5 kHz Sampling + Feature Extraction
+       ↓
+[ Serial Telemetry (UART) ]  →  Frame-based protocol: 'W' (Waveform), 'F' (Features)
+       ↓
+[ Python Backend ]           →  FFT + THD + Isolation Forest ML
+       ↓
+[ SCADA HMI (Electron) ]     →  Real-time Visualization & Alarming
 ```
 
 ---
 
-## Current Status
+## Tech Stack
 
-| Module                             | Status         |
-| ---------------------------------- | -------------- |
-| ADC acquisition pipeline           | ✅ Completed    |
-| Biasing & signal conditioning      | ✅ Completed    |
-| Serial telemetry (RTU)             | ✅ Completed    |
-| Python backend (logging + parsing) | ✅ Completed    |
-| SCADA frontend (HMI)               | ✅ Completed    |
-| Transformer-isolated AC sensing    | 🟡 In Progress |
-| Mains voltage monitoring           | 🟡 Planned     |
-| Frequency estimation               | 🔜 Planned     |
-| FFT / harmonic analysis            | 🔜 Planned     |
-| ML-based anomaly detection         | 🔜 Planned     |
+| Domain    | Technologies                                              |
+|-----------|-----------------------------------------------------------|
+| Embedded  | Arduino (C++), PlatformIO, nRF52 architecture             |
+| Backend   | Python, NumPy, SciPy (FFT), Scikit-Learn (ML), Pandas     |
+| Frontend  | Electron, JavaScript, HTML5 Canvas, Streamlit             |
+| Data      | CSV logging, Serial UART @ 115200 baud                    |
 
 ---
 
-## Technologies Used
+## Project Structure
 
-* Arduino (Embedded C++)
-* Python
-* Streamlit
-* Serial Communication (UART)
-* Analog Signal Conditioning
-* ADC Sampling
-* Real-time Data Visualization
-* CSV Data Logging
-
----
-
-## Validation
-
-* Synthetic sine wave testing using PWM + RC filtering
-* Bias stability verification
-* Serial data integrity testing
-* Real-time visualization through SCADA dashboard
-* Low-voltage AC testing using transformer isolation (ongoing)
+```
+├── prototype_code/
+│   ├── main.cpp              # Arduino firmware — high-speed sampling & frame encoding
+│   ├── scada_backend.py      # Python engine — ML, THD, and data coordination
+│   └── scada_electron/       # Electron desktop HMI source
+├── dataset/
+│   └── ...                   # Scripts for baseline "Normal" data collection & model training
+└── output/
+    └── ...                   # Visualizations — Normal vs. Anomaly comparison outputs
+```
 
 ---
 
-## Roadmap (Next Steps)
+## Contributors
 
-### Signal Analysis
+This project was a collaborative effort combining embedded engineering with advanced data processing:
 
-* Frequency estimation (zero-crossing / FFT-based)
-* RMS voltage calibration to real-world units
-* Peak and crest factor detection
-
-### Power Quality
-
-* FFT spectrum visualization
-* Harmonic distortion (THD) computation
-* Voltage sag/swell detection
-
-### System
-
-* Alarm thresholds & event logging
-* Historical trend plots
-* Exportable reports
-
-### AI / ML (Optional)
-
-* Feature extraction from waveform data
-* Unsupervised clustering of abnormal events
-* Anomaly detection on long-term logs
-
-### Hardware
-
-* Dedicated AC voltage sensing module (e.g., ZMPT101B)
-* PCB design for analog front-end
-* Improved isolation and calibration
+- **AJ** *(Project Lead)* — Hardware architecture, analog front-end design, and Arduino C++ firmware development
+- **Purusharth** — Python backend processing engine (ML pipeline, FFT, THD logic) and SCADA Electron interface development
 
 ---
 
-## Notes
+## ⚠️ Safety Notice
 
-This project is actively being developed and extended. The current implementation focuses on building a reliable acquisition and monitoring pipeline, with advanced signal analysis and full mains integration planned as future upgrades.
+This project involves signals derived from mains-level AC voltages. **High voltage is lethal.**
 
----
-
-## Author
-
-AJ
+- Always use a step-down isolation transformer (e.g., 220V → 6V or 9V AC output)
+- Never connect the Arduino or any microcontroller directly to mains without proper optical or magnetic isolation
+- This project is intended for educational and research purposes only
 
 ---
 
-> This project is intended for educational and research purposes. Direct mains voltage experimentation must be performed only with proper isolation and safety precautions.
+---
+
+## Output & Results
+
+<p align="center">
+  <img src="output/normal.png" alt="Output 1" width="700"/>
+</p>
+
+<p align="center">
+  <img src="output/mains connection.png" alt="Theft Demo" width="700"/>
+</p>
+
+<p align="center">
+  <img src="output/anomaly.png" alt="Output 2" width="700"/>
+</p>
+
+---
+
+*Developed as a prototype for advanced Power Quality Monitoring and Predictive Maintenance.*
