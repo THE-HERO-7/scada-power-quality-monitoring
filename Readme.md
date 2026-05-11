@@ -118,7 +118,7 @@ This project involves signals derived from mains-level AC voltages. **High volta
 </p>
 
 <p align="center">
-  <img src="output/mains connection.png" alt="Theft Demo" width="700"/>
+  <img src="output/mains connections.png" alt="Theft Demo" width="700"/>
 </p>
 
 <p align="center">
