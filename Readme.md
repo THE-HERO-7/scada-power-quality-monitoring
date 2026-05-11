@@ -95,7 +95,7 @@ This system was built to change that. It monitors electrical signals in real tim
 This project was a collaborative effort combining embedded engineering with advanced data processing:
 
 - **AJ** *(Project Lead)* — Hardware architecture, analog front-end design, and Arduino C++ firmware development
-- **Purusharth** — Python backend processing engine (ML pipeline, FFT, THD logic) and SCADA Electron interface development
+- **Purusharth** — Python backend processing engine (ML pipeline, FFT, THD logic) and and assisted in the development of the SCADA Electron interface.
 
 ---
 
@@ -103,7 +103,7 @@ This project was a collaborative effort combining embedded engineering with adva
 
 This project involves signals derived from mains-level AC voltages. **High voltage is lethal.**
 
-- Always use a step-down isolation transformer (e.g., 220V → 6V or 9V AC output)
+- Always use a step-down isolation transformer (e.g., 220V → 6V AC output)
 - Never connect the Arduino or any microcontroller directly to mains without proper optical or magnetic isolation
 - This project is intended for educational and research purposes only
 
