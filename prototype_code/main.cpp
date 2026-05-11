@@ -48,7 +48,6 @@ float calculateFrequency(float *data) {
 
 void loop() {
 
-  // ---------- 1. SAMPLE ADC ----------
   for (int i = 0; i < SAMPLE_COUNT; i++) {
     int raw = analogRead(ADC_PIN);
 
@@ -60,7 +59,6 @@ void loop() {
     delayMicroseconds(SAMPLE_DELAY_US);
   }
 
-  // ---------- 2. REMOVE DC OFFSET ----------
   float mean = 0;
   for (int i = 0; i < SAMPLE_COUNT; i++) {
     mean += samples[i];
