@@ -35,7 +35,11 @@ This system was built to change that. It monitors electrical signals in real tim
   - Live FFT spectrum visualization
   - Power quality metrics panel
   - Visual alarm indicators — 🟢 NORMAL / 🔴 ANOMALY
-- **Streamlit web dashboard** for remote monitoring and CSV data logging
+
+### Docker & Containerization
+- **Dockerized Python backend** — runs signal processing and Isolation Forest anomaly detection in an isolated, reproducible container environment
+- **Dependency management** — packages Python dependencies and baseline dataset using a custom Dockerfile
+- **Electron integration** — Electron launches the Docker container and exchanges telemetry through standard input/output
 
 ---
 
@@ -64,29 +68,85 @@ This system was built to change that. It monitors electrical signals in real tim
 
 ---
 
+
 ## Tech Stack
 
-| Domain    | Technologies                                              |
-|-----------|-----------------------------------------------------------|
-| Embedded  | Arduino (C++), PlatformIO, nRF52 architecture             |
-| Backend   | Python, NumPy, SciPy (FFT), Scikit-Learn (ML), Pandas     |
-| Frontend  | Electron, JavaScript, HTML5 Canvas, Streamlit             |
-| Data      | CSV logging, Serial UART @ 115200 baud                    |
+| Domain | Technologies |
+|---|---|
+| Embedded | Arduino (C++), PlatformIO, nRF52 architecture |
+| Backend | Python, NumPy, SciPy (FFT), Scikit-Learn (ML), Pandas |
+| Frontend | Electron, JavaScript, HTML5 Canvas |
+| Containerization | Docker, Dockerfile, containerized Python backend |
+| Data | CSV logging, Serial UART @ 115200 baud |
+
 
 ---
 
 ## Project Structure
 
-```
+```text
 ├── prototype_code/
-│   ├── main.cpp              # Arduino firmware — high-speed sampling & frame encoding
-│   ├── scada_backend.py      # Python engine — ML, THD, and data coordination
-│   └── scada_electron/       # Electron desktop HMI source
+│   ├── main.cpp                 # Arduino firmware — sampling and telemetry
+│   ├── scada_backend.py         # Python engine — ML, THD, and signal processing
+│   ├── requirements.txt         # Python dependencies for Docker
+│   ├── Dockerfile               # Docker image configuration for the backend
+│   └── scada_electron/          # Electron desktop HMI source
 ├── dataset/
-│   └── ...                   # Scripts for baseline "Normal" data collection & model training
+│   └── ...                      # Baseline data and dataset-generation scripts
 └── output/
-    └── ...                   # Visualizations — Normal vs. Anomaly comparison outputs
+    └── ...                      # Visualizations and demo outputs
 ```
+
+---
+
+## Docker Setup
+
+The Python signal-processing and anomaly-detection backend can run in a Docker container, providing a reproducible environment for its Python dependencies.
+
+### Prerequisites
+
+- Docker Desktop installed and running
+- Git
+- Node.js and npm for the Electron desktop application
+- Arduino Nano 33 BLE for live hardware telemetry
+
+### Build the Backend Image
+
+Run these commands from the repository root:
+
+```powershell
+docker build -t scada-backend -f prototype_code/Dockerfile .
+```
+
+### Test the Backend with Synthetic Data
+
+The backend accepts waveform (`W`) and feature (`F`) records through standard input.
+
+```powershell
+"W,0,1,2,3,4,5,6,7,8,9`nF,100,50,10,2" | docker run --rm -i scada-backend
+```
+
+A successful test should produce a model initialization message and a status response, such as `STATUS,ANOMALY,...`. The classification shown depends on the input and trained model.
+
+### Run the Electron Dashboard
+
+The Electron application runs on the Windows host and launches the Dockerized Python backend.
+
+```powershell
+cd prototype_code/scada_electron
+npm install
+npm start
+```
+
+Ensure Docker Desktop is running before launching the application. The current Electron configuration expects the Arduino's serial port to be `COM8` at `115200` baud.
+
+### Architecture
+
+- **Embedded layer:** Arduino firmware samples the signal and sends telemetry over UART.
+- **Desktop layer:** Electron reads serial data and updates the SCADA dashboard.
+- **Backend layer:** Docker runs Python signal processing, THD calculation, and Isolation Forest anomaly detection.
+
+The Python backend has been tested independently in Docker with synthetic input. End-to-end telemetry and dashboard integration should be verified with the Arduino connected.
 
 ---
 
@@ -94,8 +154,8 @@ This system was built to change that. It monitors electrical signals in real tim
 
 This project was a collaborative effort combining embedded engineering with advanced data processing:
 
-- **AJ** *(Project Lead)* — Hardware architecture, analog front-end design, and Arduino C++ firmware development
-- **Purusharth** — Python backend processing engine (ML pipeline, FFT, THD logic) and and assisted in the development of the SCADA Electron interface.
+- **AJ** *(Project Lead)* — Hardware architecture, analog front-end design, and Arduino C++ firmware development and python backend(ML pipelines and docker containerization).
+- **Purusharth** — Developed the SCADA Electron interface and assisted in the development of python backend processing engine (ML pipeline, FFT, THD logic) and docker.
 
 ---
 

@@ -28,9 +28,11 @@ app.whenReady().then(() => {
 
   // ---------- PYTHON (Path Fixed for your structure) ----------
   // '../' looks outside scada_electron into the 'src' folder
-  const pyPath = path.join(__dirname, '../scada_backend.py');
-  pyProcess = spawn('python', [pyPath]);
-
+ pyProcess = spawn(
+  'docker',
+  ['run', '--rm', '-i', 'scada-backend'],
+  { stdio: ['pipe', 'pipe', 'pipe'] }
+);
   pyProcess.on('error', (err) => console.error('Python Launch Error:', err.message));
 
   // ---------- DATA FLOW ----------
